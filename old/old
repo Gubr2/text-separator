@@ -1,0 +1,25 @@
+this.words = [..._item.querySelectorAll('[data-separate="word"]')]
+this.linesArray = []
+
+this.createLineDiv(this.words[0])
+
+this.words.forEach((_word, _index) => {
+  this.followingIndex = _index + 1
+
+  this.linesArray.push(_word)
+
+  if (this.followingIndex > this.words.length - 1) {
+    this.followingIndex = _index
+  }
+
+  if (_word.offsetLeft > this.words[this.followingIndex].offsetLeft) {
+    this.linesArray.forEach((_wordInArray) => {
+      document.querySelector(`[data-separate="line-${this.linesCounter}"]`).appendChild(_wordInArray)
+    })
+
+    this.linesArray = []
+    this.linesCounter++
+
+    this.createLineDiv(document.querySelector(`[data-separate="line line-${this.linesCounter - 1}"]`))
+  }
+})

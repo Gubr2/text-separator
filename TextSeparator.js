@@ -4,21 +4,20 @@
 
 // ---> Pridávanie classu, id alebo iného atribútu do HTML Elementov vnútri selektora
 
-export default class TextSeparate {
-  constructor(_selector) {
-    this.selector = _selector.name
-    this.createLinesFlag = _selector.createLines
+export default class TextSeparator {
+  constructor(_$_global) {
+    this.createLinesFlag = _$_global.createLines
 
-    this.separate()
+    this.lineIndex = 0
   }
 
   //
   // HLAVNÁ FUNKCIA
   //
 
-  separate() {
+  separate(_$_selector) {
     return new Promise((resolve) => {
-      this.selector.forEach((_item) => {
+      _$_selector.forEach((_item) => {
         // 1. Vytvorenie stringu z jednotlivých selektorov
         this.string = _item.innerHTML
 
@@ -60,14 +59,13 @@ export default class TextSeparate {
         // 8. Naštýlovanie jednotlivých častí
         this.setStyles(_item)
 
-        // 9. Vytvorenie riadkov (voliteľné)
-        if (this.createLinesFlag) {
-          // _item.innerHTML = this.createLines(_item)
-          this.createLines(_item)
-        }
-
         resolve()
       })
+
+      // 9. Vytvorenie riadkov (voliteľné)
+      if (this.createLinesFlag) {
+        this.createLines()
+      }
     })
   }
 
@@ -103,7 +101,7 @@ export default class TextSeparate {
     _wordsArray.forEach((_word, _index) => {
       if (_word[0] !== '<') {
         _word.forEach((_letter, _index) => {
-          _word[_index] = `<span data-separate="letter">${_letter}</span>`
+          _word[_index] = `<span data-separator="letter">${_letter}</span>`
         })
       }
     })
@@ -112,7 +110,7 @@ export default class TextSeparate {
   addSpanToWords(_wordsArray) {
     _wordsArray.forEach((_word, _index) => {
       if (_word[0] !== '<') {
-        _word[0] = `<span data-separate="word">${_word[0]}`
+        _word[0] = `<span data-separator="word">${_word[0]}`
         _word[_word.length - 1] = `${_word[_word.length - 1]}</span> `
       }
     })
@@ -126,62 +124,25 @@ export default class TextSeparate {
     })
   }
 
-  createLines(_item) {
-    this.words = [..._item.querySelectorAll('[data-separate="word"]')]
-    this.linesArray = []
+  createLines() {
+    this.words = [...document.querySelectorAll('[data-separator="word"]')]
 
-    this.createLineDiv(this.words[0])
+    this.followingIndex
 
     this.words.forEach((_word, _index) => {
       this.followingIndex = _index + 1
-
-      this.linesArray.push(_word.innerHTML)
+      _word.setAttribute('data-separator-line', `${this.lineIndex}`)
 
       if (this.followingIndex > this.words.length - 1) {
         this.followingIndex = _index
       }
 
-      if (_word.offsetLeft > this.words[this.followingIndex].offsetLeft) {
-        this.linesArray.forEach((_wordInArray) => {
-          document.querySelector('[data-separate="line"]').appendChild(_wordInArray)
-        })
-
-        this.linesArray = []
+      if (_word.offsetTop < this.words[this.followingIndex].offsetTop) {
+        this.lineIndex++
       }
+
+      // console.log(_word.offsetTop)
     })
-
-    // this.selectorWidth = _item.offsetWidth + _item.offsetLeft
-
-    // this.newEl = document.createElement('div')
-
-    // this.lineArray = []
-    // this.newLineArray = []
-
-    // this.words.forEach((_word, _index) => {
-    //   if (_index && _word.offsetLeft < this.words[_index - 1].offsetLeft) {
-    //     this.newLineArray.push(`<span data-separate="line">${this.lineArray.join('')}</span>`)
-
-    //     this.lineArray = []
-    //   } else {
-    //     this.lineArray.push(_word.outerHTML)
-    //   }
-
-    //   if (_index == this.words.length - 1) {
-    //     this.newLineArray.push(`<span data-separate="line">${this.lineArray.join('')}</span>`)
-
-    //     this.lineArray = []
-    //   }
-
-    // if (this.wordFarPosition == this.selectorWidth) {
-    //   console.log('Last')
-    // }
-    // })
-
-    // return this.newLineArray.join('')
-  }
-
-  createLineDiv(_word) {
-    _word.insertAdjacentHTML('beforebegin', '<span data-separate="line"></span>')
   }
 
   // ---> Styles
@@ -191,12 +152,12 @@ export default class TextSeparate {
     _item.style.display = 'inline-block'
 
     // Word
-    _item.querySelectorAll('[data-separate="word"]').forEach((_word) => {
+    _item.querySelectorAll('[data-separator="word"]').forEach((_word) => {
       _word.style.display = 'inline-block'
     })
 
     // Letter
-    _item.querySelectorAll('[data-separate="letter"]').forEach((_letter) => {
+    _item.querySelectorAll('[data-separator="letter"]').forEach((_letter) => {
       _letter.style.display = 'inline-block'
     })
   }
