@@ -2,70 +2,85 @@
 // ČO NEPODPORUJE //
 ////////////////////
 
-// ---> Pridávanie classu, id alebo iného atribútu do HTML Elementov vnútri selektora
+// ---> Pridávanie classu, id alebo iného atribútu do HTML Elementov vnútri selektoras
 
 export default class TextSeparator {
-  constructor(_$_global) {
-    this.createLinesFlag = _$_global.createLines
-
+  constructor() {
     this.lineIndex = 0
   }
 
   //
-  // HLAVNÁ FUNKCIA
+  // HLAVNÉ FUNKCIE
   //
 
-  separate(_$_selector) {
+  separate() {
+    this.selector = document.querySelectorAll('[data-separator="selector"]')
+    this.selectorLine = document.querySelectorAll('[data-separator="selector--line"]')
+
     return new Promise((resolve) => {
-      _$_selector.forEach((_item) => {
-        // 1. Vytvorenie stringu z jednotlivých selektorov
-        this.string = _item.innerHTML
+      if (this.selector.length || this.selectorLine.length) {
+        if (this.selector.length) {
+          this.base(this.selector, false)
+        }
 
-        // 2. Pridanie medzier za jednotlivé HTML elementy (<br>, <span>, <strong>, atď...)
-        // ---> Za charakter "<"
-        this.getHTMLElements(this.string, '<').forEach((_element, _index) => {
-          if (!_element) {
-            this.string = this.string.substr(0, _element + _index) + ' ' + this.string.substr(_element + _index)
-          } else {
-            this.string = this.string.substr(0, _element + _index) + ' ' + this.string.substr(_element + _index)
-          }
-        })
+        if (this.selectorLine.length) {
+          this.base(this.selectorLine, true)
+        }
 
-        // ---> Za charakter ">"
-        this.getHTMLElements(this.string, '>').forEach((_element, _index) => {
-          if (!_element) {
-            this.string = this.string.substr(0, _element + _index + 1) + ' ' + this.string.substr(_element + _index + 1)
-          } else {
-            this.string = this.string.substr(0, _element + _index + 1) + ' ' + this.string.substr(_element + _index + 1)
-          }
-        })
+        // ---> Create Lines
 
-        // 3. Odstránenie prázdnych medzier, ktoré vzniknú pri rozdelovaní slov
-        this.wordsArray = this.cleanEmptySpaces(this.string.split(' '))
-
-        // 4. Rozdelenie slov na písmená
-        this.separateWordsIntoLetters(this.wordsArray)
-
-        // 5. Pridanie span tagov pre písmená a slová
-        this.addSpanToLetters(this.wordsArray)
-        this.addSpanToWords(this.wordsArray)
-
-        // 6. Spojenie písmen v slovách
-        this.joinLetters(this.wordsArray)
-
-        // 7. Vloženie separovaného textu naspäť do HTML
-        _item.innerHTML = this.wordsArray.join('')
-
-        // 8. Naštýlovanie jednotlivých častí
-        this.setStyles(_item)
+        if (this.selectorLine.length) {
+          this.createLines()
+        }
 
         resolve()
+      } else {
+        console.warn('Text Separator: Please provide selector. ([data-separator="selector"] or [data-separator="selector--line"])')
+      }
+    })
+  }
+
+  base(_selector, _toLine) {
+    _selector.forEach((_item) => {
+      // 1. Vytvorenie stringu z jednotlivých selektorov
+      this.string = _item.innerHTML
+      // 2. Pridanie medzier za jednotlivé HTML elementy (<br>, <span>, <strong>, atď...)
+      // ---> Za charakter "<"
+      this.getHTMLElements(this.string, '<').forEach((_element, _index) => {
+        if (!_element) {
+          this.string = this.string.substr(0, _element + _index) + ' ' + this.string.substr(_element + _index)
+        } else {
+          this.string = this.string.substr(0, _element + _index) + ' ' + this.string.substr(_element + _index)
+        }
       })
 
-      // 9. Vytvorenie riadkov (voliteľné)
-      if (this.createLinesFlag) {
-        this.createLines()
-      }
+      // ---> Za charakter ">"
+      this.getHTMLElements(this.string, '>').forEach((_element, _index) => {
+        if (!_element) {
+          this.string = this.string.substr(0, _element + _index + 1) + ' ' + this.string.substr(_element + _index + 1)
+        } else {
+          this.string = this.string.substr(0, _element + _index + 1) + ' ' + this.string.substr(_element + _index + 1)
+        }
+      })
+
+      // 3. Odstránenie prázdnych medzier, ktoré vzniknú pri rozdelovaní slov
+      this.wordsArray = this.cleanEmptySpaces(this.string.split(' '))
+
+      // 4. Rozdelenie slov na písmená
+      this.separateWordsIntoLetters(this.wordsArray)
+
+      // 5. Pridanie span tagov pre písmená a slová
+      this.addSpanToLetters(this.wordsArray)
+      this.addSpanToWords(this.wordsArray, _toLine)
+
+      // 6. Spojenie písmen v slovách
+      this.joinLetters(this.wordsArray)
+
+      // 7. Vloženie separovaného textu naspäť do HTML
+      _item.innerHTML = this.wordsArray.join('')
+
+      // 8. Naštýlovanie jednotlivých častí
+      this.setStyles(_item)
     })
   }
 
@@ -107,11 +122,16 @@ export default class TextSeparator {
     })
   }
 
-  addSpanToWords(_wordsArray) {
+  addSpanToWords(_wordsArray, _toLine) {
     _wordsArray.forEach((_word, _index) => {
       if (_word[0] !== '<') {
-        _word[0] = `<span data-separator="word">${_word[0]}`
-        _word[_word.length - 1] = `${_word[_word.length - 1]}</span> `
+        if (_toLine) {
+          _word[0] = `<span data-separator="word--line">${_word[0]}`
+          _word[_word.length - 1] = `${_word[_word.length - 1]}</span> `
+        } else {
+          _word[0] = `<span data-separator="word">${_word[0]}`
+          _word[_word.length - 1] = `${_word[_word.length - 1]}</span> `
+        }
       }
     })
   }
@@ -125,9 +145,9 @@ export default class TextSeparator {
   }
 
   createLines() {
-    this.words = [...document.querySelectorAll('[data-separator="word"]')]
+    this.words = [...document.querySelectorAll('[data-separator="word--line"]')]
 
-    this.followingIndex
+    this.followingIndex = 0
 
     this.words.forEach((_word, _index) => {
       this.followingIndex = _index + 1
@@ -140,8 +160,6 @@ export default class TextSeparator {
       if (_word.offsetTop < this.words[this.followingIndex].offsetTop) {
         this.lineIndex++
       }
-
-      // console.log(_word.offsetTop)
     })
   }
 
@@ -160,5 +178,13 @@ export default class TextSeparator {
     _item.querySelectorAll('[data-separator="letter"]').forEach((_letter) => {
       _letter.style.display = 'inline-block'
     })
+  }
+
+  //
+  // ZÍSKANIE POČTU RIADKOV
+  //
+
+  getLinesCount() {
+    return this.lineIndex
   }
 }
