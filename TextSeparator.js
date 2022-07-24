@@ -1,21 +1,32 @@
-////////////////////
+/////////////////////
 // ČO NEPODPORUJE //
-////////////////////
+///////////////////
 
-// ---> Pridávanie classu, id alebo iného atribútu do HTML Elementov vnútri selektoras
+// ---> Pridávanie classu, id alebo iného atribútu do HTML Elementov vnútri selektora
+
+///////////////////////
+// DOSTUPNÉ FUNKCIE //
+/////////////////////
+
+// ---> separate([array stringov vybraných písmen])
+// ---> getLinesCount()
 
 export default class TextSeparator {
   constructor() {
     this.lineIndex = 0
+
+    this.charactersToMark = []
   }
 
   //
   // HLAVNÉ FUNKCIE
   //
 
-  separate() {
+  separate(_charactersToMark) {
     this.selector = document.querySelectorAll('[data-separator="selector"]')
     this.selectorLine = document.querySelectorAll('[data-separator="selector--line"]')
+
+    this.charactersToMark = _charactersToMark
 
     return new Promise((resolve) => {
       if (this.selector.length || this.selectorLine.length) {
@@ -116,7 +127,12 @@ export default class TextSeparator {
     _wordsArray.forEach((_word, _index) => {
       if (_word[0] !== '<') {
         _word.forEach((_letter, _index) => {
-          _word[_index] = `<span data-separator="letter">${_letter}</span>`
+          _word[_index] = `<span data-separator-letter>${_letter}</span>`
+          this.charactersToMark.forEach((_character) => {
+            if (_letter == _character) {
+              _word[_index] = `<span data-separator-letter="marked">${_letter}</span>`
+            }
+          })
         })
       }
     })
@@ -126,10 +142,10 @@ export default class TextSeparator {
     _wordsArray.forEach((_word, _index) => {
       if (_word[0] !== '<') {
         if (_toLine) {
-          _word[0] = `<span data-separator="word--line">${_word[0]}`
+          _word[0] = `<span data-separator-word="line">${_word[0]}`
           _word[_word.length - 1] = `${_word[_word.length - 1]}</span> `
         } else {
-          _word[0] = `<span data-separator="word">${_word[0]}`
+          _word[0] = `<span data-separator-word>${_word[0]}`
           _word[_word.length - 1] = `${_word[_word.length - 1]}</span> `
         }
       }
@@ -145,7 +161,7 @@ export default class TextSeparator {
   }
 
   createLines() {
-    this.words = [...document.querySelectorAll('[data-separator="word--line"]')]
+    this.words = [...document.querySelectorAll('[data-separator-word="line"')]
 
     this.followingIndex = 0
 
@@ -170,12 +186,12 @@ export default class TextSeparator {
     _item.style.display = 'inline-block'
 
     // Word
-    _item.querySelectorAll('[data-separator="word"]').forEach((_word) => {
+    _item.querySelectorAll('[data-separator-word').forEach((_word) => {
       _word.style.display = 'inline-block'
     })
 
     // Letter
-    _item.querySelectorAll('[data-separator="letter"]').forEach((_letter) => {
+    _item.querySelectorAll('[data-separator-letter').forEach((_letter) => {
       _letter.style.display = 'inline-block'
     })
   }
