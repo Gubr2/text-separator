@@ -1,19 +1,22 @@
-////////////////////////////////////////////////
-////////////////////////////////////////////////
-// *** TEXT SEPATARATOR by Adrián Gubrica *** //
-////////////////////////////////////////////////
-//////////////////// v1.0 //////////////////////
+//////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
+// *** TEXT SEPATARATOR by Adrián Gubrica, v1.0 *** //
+//////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
 
-////////////////// Poznámky ////////////////////
+////////////////// Notes ////////////////////
 
-// Čo nepodporuje
+// ---> Not supported
 
-// ---> Pridávanie classu, id alebo iného atribútu do HTML Elementov vnútri selektora
+// [] Adding classes, ids, attributes to the html elements inside the selector
 
-// Dostupné funkcie
+// ---> Functions
 
-// ---> separate([array stringov vybraných písmen])
-// ---> getLinesCount()
+// [] separate([array of strings to be marked]) - This functions is looking for the following attributes on parent text html elements:
+//    * [data-separator="selector"] - Separates the text element to words and letters
+//    * [data-separator="selector--line"] - Separates the text element to words and letters. Also, it marks the lines, and numbers them.
+
+// [] getLinesCount() - This function returns the number of lines in text html element
 
 export default class TextSeparator {
   constructor() {
