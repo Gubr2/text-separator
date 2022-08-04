@@ -31,10 +31,11 @@ export default class TextSeparator {
 
   separate(_charactersToMark, _customSelector) {
     if (_customSelector) {
-      this.selectorLine = document.querySelectorAll(_customSelector)
+      this.selector = []
+      this.selectorLine = [...document.querySelectorAll(_customSelector)]
     } else {
-      this.selector = document.querySelectorAll('[data-separator="selector"]')
-      this.selectorLine = document.querySelectorAll('[data-separator="selector--line"]')
+      this.selector = [...document.querySelectorAll('[data-separator="selector"]')]
+      this.selectorLine = [...document.querySelectorAll('[data-separator="selector--line"]')]
     }
 
     this.charactersToMark = _charactersToMark
@@ -139,11 +140,13 @@ export default class TextSeparator {
       if (_word[0] !== '<') {
         _word.forEach((_letter, _index) => {
           _word[_index] = `<span data-separator-letter>${_letter}</span>`
-          this.charactersToMark.forEach((_character) => {
-            if (_letter == _character) {
-              _word[_index] = `<span data-separator-letter="marked">${_letter}</span>`
-            }
-          })
+          if (this.charactersToMark > 0) {
+            this.charactersToMark.forEach((_character) => {
+              if (_letter == _character) {
+                _word[_index] = `<span data-separator-letter="marked">${_letter}</span>`
+              }
+            })
+          }
         })
       }
     })
