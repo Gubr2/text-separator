@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////
-// *** TEXT SEPATARATOR by Adrián Gubrica, v1.0 *** //
+// *** TEXT SEPATARATOR by Adrián Gubrica, v1.1 *** //
 //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////
 
@@ -29,9 +29,13 @@ export default class TextSeparator {
   // HLAVNÉ FUNKCIE
   //
 
-  separate(_charactersToMark) {
-    this.selector = document.querySelectorAll('[data-separator="selector"]')
-    this.selectorLine = document.querySelectorAll('[data-separator="selector--line"]')
+  separate(_charactersToMark, _customSelector) {
+    if (_customSelector) {
+      this.selectorLine = document.querySelectorAll(_customSelector)
+    } else {
+      this.selector = document.querySelectorAll('[data-separator="selector"]')
+      this.selectorLine = document.querySelectorAll('[data-separator="selector--line"]')
+    }
 
     this.charactersToMark = _charactersToMark
 
