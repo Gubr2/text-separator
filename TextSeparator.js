@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////
-// *** TEXT SEPATARATOR by Adrián Gubrica, v1.2 *** //
+// *** TEXT SEPATARATOR by Adrián Gubrica, v1.3 *** //
 //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////
 
@@ -20,8 +20,6 @@
 
 export default class TextSeparator {
   constructor() {
-    this.lineIndex = 0
-
     this.charactersToMark = []
   }
 
@@ -48,12 +46,12 @@ export default class TextSeparator {
 
         if (this.selectorLine.length) {
           this.base(this.selectorLine, true)
-        }
 
-        // ---> Create Lines
-
-        if (this.selectorLine.length) {
-          this.createLines()
+          // ---> Create Lines
+          this.selectorLine.forEach((_item) => {
+            this.addLinesToArray(_item)
+            this.setLineStyle(_item)
+          })
         }
 
         resolve()
@@ -174,9 +172,13 @@ export default class TextSeparator {
     })
   }
 
-  createLines() {
-    this.words = [...document.querySelectorAll('[data-separator-word="line"')]
+  //
+  // LINES
+  //
 
+  // (Stará)
+  createLineOld() {
+    this.words = [...document.querySelectorAll('[data-separator-word="line"')]
     this.followingIndex = 0
 
     this.words.forEach((_word, _index) => {
@@ -193,6 +195,81 @@ export default class TextSeparator {
     })
   }
 
+  addLinesToArray(_selector) {
+    this.lineIndex = 0
+    this.arrayForLines = []
+
+    this.lineSelector = _selector
+    this.lineSelectorToArray = Array.from(this.lineSelector.childNodes)
+
+    this.arrayForLines[0] = new Array()
+
+    // this.line = document.createElement('span')
+    // this.line.setAttribute('data-separator-line', '')
+    // this.lineSelector.appendChild(this.line)
+
+    // this.followingIndex = 0
+
+    // this.lineElement = [...document.querySelectorAll('[data-separator-line]')]
+
+    this.lineSelectorToArray.forEach((_item, _index) => {
+      this.followingIndex = _index + 2
+      // _item.setAttribute('data-separator-line', `${this.lineIndex}`)
+
+      // if (this.followingIndex > this.lineSelector.length - 1) {
+      //   this.followingIndex = _index
+      // }
+
+      // this.lineElement[this.lineElement.length - 1].appendChild(_item)
+
+      if (this.followingIndex > this.lineSelectorToArray.length - 1) {
+        this.followingIndex = _index
+      }
+
+      this.arrayForLines[this.lineIndex].push(_item)
+
+      if (this.isElement(_item)) {
+        if (_item.offsetTop < this.lineSelectorToArray[this.followingIndex].offsetTop) {
+          // console.log('now')
+          this.lineIndex++
+          this.arrayForLines[this.lineIndex] = new Array()
+        }
+      }
+    })
+
+    this.createLines(this.lineSelector, this.arrayForLines)
+
+    // this.lineSelector = document.querySelector('.about__articles__items__item__title h5')
+    // this.line = document.createElement('div')
+    // this.line.setAttribute('data-separator-line', '')
+    // this.lineSelector.appendChild(this.line)
+
+    // this.array = Array.from(this.lineSelector.childNodes)
+
+    // this.array.forEach((_item, _index) => {
+    //   document.querySelector('[data-separator-line]').appendChild(_item)
+
+    //   console.log(_index)
+    // })
+  }
+
+  createLines(_selector, _array) {
+    _array.forEach((_item) => {
+      this.line = document.createElement('span')
+      this.line.setAttribute('data-separator-line', '')
+
+      _item.forEach((_element) => {
+        this.line.appendChild(_element)
+      })
+
+      _selector.appendChild(this.line)
+    })
+  }
+
+  isElement(element) {
+    return element instanceof Element || element instanceof HTMLDocument
+  }
+
   // ---> Styles
 
   setStyles(_item) {
@@ -207,6 +284,13 @@ export default class TextSeparator {
     // Letter
     _item.querySelectorAll('[data-separator-letter').forEach((_letter) => {
       _letter.style.display = 'inline-block'
+    })
+  }
+
+  setLineStyle(_item) {
+    // Line
+    _item.querySelectorAll('[data-separator-line').forEach((_line) => {
+      _line.style.display = 'inline-block'
     })
   }
 
