@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////
-// *** TEXT SEPATARATOR by Adrián Gubrica, v1.3 *** //
+// *** TEXT SEPATARATOR by Adrián Gubrica, v1.4 *** //
 //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////
 
@@ -157,8 +157,8 @@ export default class TextSeparator {
           _word[0] = `<span data-separator-word="line">${_word[0]}`
           _word[_word.length - 1] = `${_word[_word.length - 1]}</span> `
         } else {
-          _word[0] = `<span data-separator-word>${_word[0]}`
-          _word[_word.length - 1] = `${_word[_word.length - 1]}</span> `
+          _word[0] = `<span data-separator-word-wrapper><span data-separator-word>${_word[0]}`
+          _word[_word.length - 1] = `${_word[_word.length - 1]}</span></span> `
         }
       }
     })
@@ -204,23 +204,8 @@ export default class TextSeparator {
 
     this.arrayForLines[0] = new Array()
 
-    // this.line = document.createElement('span')
-    // this.line.setAttribute('data-separator-line', '')
-    // this.lineSelector.appendChild(this.line)
-
-    // this.followingIndex = 0
-
-    // this.lineElement = [...document.querySelectorAll('[data-separator-line]')]
-
     this.lineSelectorToArray.forEach((_item, _index) => {
       this.followingIndex = _index + 2
-      // _item.setAttribute('data-separator-line', `${this.lineIndex}`)
-
-      // if (this.followingIndex > this.lineSelector.length - 1) {
-      //   this.followingIndex = _index
-      // }
-
-      // this.lineElement[this.lineElement.length - 1].appendChild(_item)
 
       if (this.followingIndex > this.lineSelectorToArray.length - 1) {
         this.followingIndex = _index
@@ -230,7 +215,6 @@ export default class TextSeparator {
 
       if (this.isElement(_item)) {
         if (_item.offsetTop < this.lineSelectorToArray[this.followingIndex].offsetTop) {
-          // console.log('now')
           this.lineIndex++
           this.arrayForLines[this.lineIndex] = new Array()
         }
@@ -238,19 +222,6 @@ export default class TextSeparator {
     })
 
     this.createLines(this.lineSelector, this.arrayForLines)
-
-    // this.lineSelector = document.querySelector('.about__articles__items__item__title h5')
-    // this.line = document.createElement('div')
-    // this.line.setAttribute('data-separator-line', '')
-    // this.lineSelector.appendChild(this.line)
-
-    // this.array = Array.from(this.lineSelector.childNodes)
-
-    // this.array.forEach((_item, _index) => {
-    //   document.querySelector('[data-separator-line]').appendChild(_item)
-
-    //   console.log(_index)
-    // })
   }
 
   createLines(_selector, _array) {
@@ -277,6 +248,10 @@ export default class TextSeparator {
     _item.style.display = 'inline-block'
 
     // Word
+    _item.querySelectorAll('[data-separator-word-wrapper').forEach((_word) => {
+      _word.style.display = 'inline-block'
+    })
+
     _item.querySelectorAll('[data-separator-word').forEach((_word) => {
       _word.style.display = 'inline-block'
     })
