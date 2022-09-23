@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////
-// *** TEXT SEPATARATOR by Adrián Gubrica, v1.4 *** //
+// *** TEXT SEPATARATOR by Adrián Gubrica, v1.5 *** //
 //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////
 
@@ -36,6 +36,7 @@ export default class TextSeparator {
       this.selectorLine = [...document.querySelectorAll('[data-separator="selector--line"]')]
     }
 
+    this.charactersToMark = []
     this.charactersToMark = _charactersToMark
 
     return new Promise((resolve) => {
@@ -68,20 +69,12 @@ export default class TextSeparator {
       // 2. Pridanie medzier za jednotlivé HTML elementy (<br>, <span>, <strong>, atď...)
       // ---> Za charakter "<"
       this.getHTMLElements(this.string, '<').forEach((_element, _index) => {
-        if (!_element) {
-          this.string = this.string.substr(0, _element + _index) + ' ' + this.string.substr(_element + _index)
-        } else {
-          this.string = this.string.substr(0, _element + _index) + ' ' + this.string.substr(_element + _index)
-        }
+        this.string = this.string.substr(0, _element + _index) + ' ' + this.string.substr(_element + _index)
       })
 
       // ---> Za charakter ">"
       this.getHTMLElements(this.string, '>').forEach((_element, _index) => {
-        if (!_element) {
-          this.string = this.string.substr(0, _element + _index + 1) + ' ' + this.string.substr(_element + _index + 1)
-        } else {
-          this.string = this.string.substr(0, _element + _index + 1) + ' ' + this.string.substr(_element + _index + 1)
-        }
+        this.string = this.string.substr(0, _element + _index + 1) + ' ' + this.string.substr(_element + _index + 1)
       })
 
       // 3. Odstránenie prázdnych medzier, ktoré vzniknú pri rozdelovaní slov
@@ -154,8 +147,8 @@ export default class TextSeparator {
     _wordsArray.forEach((_word, _index) => {
       if (_word[0] !== '<') {
         if (_toLine) {
-          _word[0] = `<span data-separator-word="line">${_word[0]}`
-          _word[_word.length - 1] = `${_word[_word.length - 1]}</span> `
+          _word[0] = `<span data-separator-word-wrapper><span data-separator-word="line">${_word[0]}`
+          _word[_word.length - 1] = `${_word[_word.length - 1]}</span></span> `
         } else {
           _word[0] = `<span data-separator-word-wrapper><span data-separator-word>${_word[0]}`
           _word[_word.length - 1] = `${_word[_word.length - 1]}</span></span> `
@@ -175,25 +168,6 @@ export default class TextSeparator {
   //
   // LINES
   //
-
-  // (Stará)
-  createLineOld() {
-    this.words = [...document.querySelectorAll('[data-separator-word="line"')]
-    this.followingIndex = 0
-
-    this.words.forEach((_word, _index) => {
-      this.followingIndex = _index + 1
-      _word.setAttribute('data-separator-line', `${this.lineIndex}`)
-
-      if (this.followingIndex > this.words.length - 1) {
-        this.followingIndex = _index
-      }
-
-      if (_word.offsetTop < this.words[this.followingIndex].offsetTop) {
-        this.lineIndex++
-      }
-    })
-  }
 
   addLinesToArray(_selector) {
     this.lineIndex = 0
@@ -215,6 +189,7 @@ export default class TextSeparator {
 
       if (this.isElement(_item)) {
         if (_item.offsetTop < this.lineSelectorToArray[this.followingIndex].offsetTop) {
+          // console.log('now')
           this.lineIndex++
           this.arrayForLines[this.lineIndex] = new Array()
         }
